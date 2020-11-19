@@ -59,27 +59,27 @@ Future<Void> completionSignalOfSend = socketClient.fireAndForget(message);
 
 ##### Request/Response (single-response)
 
-Standard request/response semantics are still supported, and still expected to represent the majority of requests over a RSocket connection. These request/response interactions can be considered optimized "streams of only 1 response", and are asynchronous messages multiplexed over a single connection. 
+仍支持标准请求/响应语义，并且仍有望代表RSocket连接上的大多数请求（多数使用场景）。这些请求/响应交互可以被视为优化的“仅1个响应的流”，并且是在单个连接上多路复用的异步消息。
 
-The consumer "waits" for the response message, so it looks like a typical request/response, but underneath it never synchronously blocks.
+使用者“等待”响应消息，因此它看起来像是典型的请求/响应，但在其下面永远不会同步阻塞。
 
-Usage can be thought of like this:
+使用方法如下：
 
 ```java
-Future<Payload> response = socketClient.requestResponse(requestPayload);
+Future<Paload> response = socketClient.requestResponse(requestPayload);
 ```
 
 ##### Request/Stream (multi-response, finite) 
 
-Extending from request/response is request/stream, which allows multiple messages to be streamed back. Think of this as a "collection" or "list" response, but instead of getting back all the data as a single response, each element is streamed back in order.
+请求/流是对请求/响应的扩展，允许将多条消息以流的形式返回。可以将其视为“集合”或“列表”响应，但不是将所有数据作为单个响应获取，而是按顺序流回每个元素。
 
-Use cases could include things like:
+可能的使用场景如下:
 
-- fetching a list of videos
-- fetching products in a catalog
-- retrieving a file line-by-line
+- 获取电影列表
+- 获取目录中的所有产品
+- 按行读取文件
 
-Usage can be thought of like this:
+使用方式如下：
 
 ```java
 Publisher<Payload> response = socketClient.requestStream(requestPayload);
@@ -87,17 +87,16 @@ Publisher<Payload> response = socketClient.requestStream(requestPayload);
 
 ##### Channel
 
-A channel is bi-directional, with a stream of messages in both directions. 
+通道是双向的，双向都有消息流。
 
-An example use case that benefits from this interaction model is:
+受益于此交互模型的示例:
 
-- client requests a stream of data that initially bursts the current view of the world
-- deltas/diffs are emitted from server to client as changes occur
-- client update the subscription over time to add/remove criteria/topics/etc
+- 发生变化时服务端向客户端发送增量和差异。
+- 客户端会随着时间的推移更新订阅，以添加/删除条件/主题/等
 
-Without a bi-directional channel, the client would have to cancel the initial request, re-request and receive all data from scratch, rather than just updating the subscription and efficiently getting just the difference. 
+如果没有双向通道，客户端将不得不取消初始请求，重新请求并从头开始接收所有数据，而不仅仅是更新订阅并有效地获取差额。
 
-Usage can be thought of like this:
+使用方式如下:
 
 ```java
 Publisher<Payload> output = socketClient.requestChannel(Publisher<Payload> input);
