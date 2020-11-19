@@ -47,11 +47,11 @@ Reactive Manifesto中记录，Reactive Streams和Reactive Extensions类库中实
 
 ##### Fire-and-Forget
 
-Fire-and-forget is an optimization of request/response that is useful when a response is not needed. It allows for significant performance optimizations, not just in saved network usage by skipping the response, but also in client and server processing time as no bookkeeping is needed to wait for and associate a response or cancellation request. 
+Fire-and-forget是对请求/响应模式的一种优化，在不需要响应的时候更加有用。Fire-and-Forget通过跳过响应来减少对网络的使用量，客户端和服务器因为无需记录需要等待和关联响应或者取消请求从而节省了处理时间，带来了巨大的性能提升。
 
-This interaction model is useful for use cases that support lossiness, such as non-critical event logging. 
+对于允许有损性的场景（例如非关键事件日志记录），此交互模型十分有用。
 
-Usage can be thought of like this:
+使用方法如下：
 
 ```java
 Future<Void> completionSignalOfSend = socketClient.fireAndForget(message);
