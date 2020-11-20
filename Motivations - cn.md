@@ -102,23 +102,23 @@ Publisher<Payload> response = socketClient.requestStream(requestPayload);
 Publisher<Payload> output = socketClient.requestChannel(Publisher<Payload> input);
 ```
 
-#### Behaviors行为
+#### 行为
 
-Beyond the interaction models above, there are other behaviors that can benefit applications and system efficiency. 
+除了上面提到的交互模型，RSocket还有一些其他的行为可以帮助应用和系统提供效率。
 
-##### single-response vs multi-response
+##### 单响应 vs 多响应
 
-One key difference between single-response and multi-response is how the RSocket stack delivers data to the application: A single-response might be carried across multiple frames, and be part of a larger RS connection that is streaming multiple messages multiplexed. But single-response means the application only gets its data when the entire response is received. While multi-response delivers it piecemeal. This could allow the user to design its service with multi-response in mind, and then the client can start processing the data as soon as it receives the first chunk.
+单响应和多响应之间一个关键的不同是RSocket协议栈如何将数据发送到应用程序：单响应可能需要多个帧承载，科切可能是流式传输多个消息的较大RSocket的一部分。但是单响应意味着仅当收到整个响应时，应用程序才能获取其数据。多响应零散的传输数据，这可以使用户在设计服务时考虑到多响应，客户端可以在收到第一个数据块后立即开始处理数据。
 
-##### Bi-Directional
+##### 双向（双工）
 
-RSocket supports bi-directional requests where both client and server can act as requester or responder. This allows a client (such as a user device) to act as a responder to requests from the server. 
+RSocket支持双向请求，其中客户端和服务器都可以充当请求者或响应者。这允许客户端（例如用户设备）充当来自服务器的请求的响应者。
 
-For example, a server could query clients for trace debug information, state, etc. This can be used to reduce infrastructure scaling requirements by allowing server-side to query when needed instead of having millions/billions of clients constantly submitting data that may only occasionally be needed. This also opens up future interaction models currently not envisioned between client and server.
+例如，服务器可以向客户端查询跟踪调试信息，状态等。通过允许服务器端在需要时进行查询，而不是让成千上万的客户端不断提交仅偶尔出现的数据，这可以减少基础结构扩展需求和被需要。 这也打开了客户端和服务器之间当前未想到的未来交互模型。
 
-##### Cancellation
+##### 取消
 
-All streams (including request/response) support cancellation to allow efficient cleanup of server (responder) resources. This means that when a client cancels, or walks away, servers are given the chance to terminate work early. This is essential with interaction models such as streams and subscriptions, but is even useful with request/response to allow efficient adoption of approaches such as "backup requests" to tame tail latency (more information [here](http://highscalability.com/blog/2012/3/12/google-taming-the-long-latency-tail-when-more-machines-equal.html), [here](http://highscalability.com/blog/2012/6/18/google-on-latency-tolerant-systems-making-a-predictable-whol.html), [here](http://www.bailis.org/blog/doing-redundant-work-to-speed-up-distributed-queries/), and [here](http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en/us/people/jeff/Stanford-DL-Nov-2010.pdf))
+所有的流都支持取消以提高服务器清理资源的速度。这意味着当客户端取消或离开时，服务器将有机会提前终止工作。这对于诸如流和订阅之类的交互模型是必不可少的，但是对于请求/响应甚至是有用的，以允许有效地采用诸如“备份请求”之类的方法来驯服尾部延迟。
 
 
 #### Resumability可恢复性
