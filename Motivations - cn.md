@@ -151,6 +151,8 @@ The second form of flow control is primarily focused on server-to-server use cas
 
 Many of the motivations above can be achieved by leveraging existing protocols, libraries, and techniques. However, this often ends up being tightly coupled with specific implementations that must be agreed upon across languages, platforms and tech stacks. Formalizing the interaction models and flow control behaviors into a protocol provides a contract between implementations in different languages. This in turn improves polyglot interactions in a broader set of behaviors than the ubiquitous HTTP/1.1 request/response, while also enabling Reactive Streams application level flow control across languages (rather than just in Java for example where Reactive Streams was originally defined).
 
+上面提到的很多动机都可以使用现有的协议、库和技术实现。但是，这通常最终与必须跨语言，平台和技术堆栈达成一致的特定实现紧密结合。将交互模型和流控制行为形式化为协议，可以实现不同语言的实现之间的契约。反过来，与无处不在的HTTP / 1.1请求/响应相比，这可以改善行为集中的多语言交互，同时还支持跨语言的Reactive Streams应用程序级流控制（而不是仅在最初定义Reactive Streams的Java中）。
+
 #### 灵活的传输层
 
 Just like HTTP request/response is not the only way applications can or should communicate, TCP is not the only transport layer available, and not the best for all use cases. Thus, RSocket allows for swapping of the underlying transport layer based on environment, device capabilities and performance needs. RSocket (the application protocol) targets WebSockets, TCP, and [Aeron](https://github.com/real-logic/Aeron), and is expected to be usable over any transport layer with TCP-like characteristics, such as [Quic](https://www.chromium.org/quic).
