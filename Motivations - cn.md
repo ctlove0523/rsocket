@@ -121,14 +121,14 @@ RSocket支持双向请求，其中客户端和服务器都可以充当请求者�
 所有的流都支持取消以提高服务器清理资源的速度。这意味着当客户端取消或离开时，服务器将有机会提前终止工作。这对于诸如流和订阅之类的交互模型是必不可少的，但是对于请求/响应甚至是有用的，以允许有效地采用诸如“备份请求”之类的方法来驯服尾部延迟。
 
 
-#### Resumability可恢复性
+#### 可恢复性
 
-With long-lived streams, particularly those serving subscriptions from mobile clients, network disconnects can significant impact cost and performance if all subscriptions must be re-established. This is particularly egregious when the network is immediately reconnected, or when switched between Wifi and cell networks. 
+对于长时间存活的流，特别是来自从移动客户端服务订阅的流，如果必须重新建立所有订阅，则网络断开连接会严重影响成本和性能。尤其在可以立即重新连接网络或在Wifi和蜂窝网络之间切换时，这一点尤为严重。
 
-RSocket supports session resumption, allowing a simple handshake to resume a client/server session over a new transport connection.
+RSocket支持会话恢复，允许简单的握手即可通过新的传输连接恢复客户端/服务器会话。
 
 
-#### Application Flow Control应用流控
+#### 应用流控
 
 RSocket supports two forms of application-level flow control to help protect both client and server resources from being overwhelmed.
 
@@ -147,11 +147,11 @@ This same data type and approach has been adopted into Java 9 in the `java.util.
 The second form of flow control is primarily focused on server-to-server use cases in a data center. When enabled, a responder (typically a server) can issue leases to the requester based upon its knowledge of its capacity in order to control requests rates. On the requester side, this enables application level load balancing for sending messages only to responders (servers) that have signalled capacity. This signal from server to client allows for more intelligent routing and load balancing algorithms in data centers with clusters of machines. 
 
 
-#### Polyglot Support多语言支持
+#### 多语言支持
 
 Many of the motivations above can be achieved by leveraging existing protocols, libraries, and techniques. However, this often ends up being tightly coupled with specific implementations that must be agreed upon across languages, platforms and tech stacks. Formalizing the interaction models and flow control behaviors into a protocol provides a contract between implementations in different languages. This in turn improves polyglot interactions in a broader set of behaviors than the ubiquitous HTTP/1.1 request/response, while also enabling Reactive Streams application level flow control across languages (rather than just in Java for example where Reactive Streams was originally defined).
 
-#### Transport Layer Flexibility灵活的传输层
+#### 灵活的传输层
 
 Just like HTTP request/response is not the only way applications can or should communicate, TCP is not the only transport layer available, and not the best for all use cases. Thus, RSocket allows for swapping of the underlying transport layer based on environment, device capabilities and performance needs. RSocket (the application protocol) targets WebSockets, TCP, and [Aeron](https://github.com/real-logic/Aeron), and is expected to be usable over any transport layer with TCP-like characteristics, such as [Quic](https://www.chromium.org/quic).
 
@@ -159,7 +159,7 @@ Perhaps more importantly though, it makes TCP, WebSockets and Aeron usable witho
 
 Thus, RSocket defines application layer semantics over these network transports to allow choosing them when they are appropriate. Later in this document is a brief comparison with other protocols that were explored while trying to leverage WebSockets and Aeron before determining that a new application protocol was wanted.
 
-#### Efficiency & Performance效率和性能
+#### 效率和性能
 
 A protocol that uses network resources inefficiently (repeated handshakes and connection setup and tear down overhead, bloated message format, etc.) can greatly increase the perceived latency of a system. Also, without flow control semantics, a single poorly written module can overrun the rest of the system when dependent services slow down, potentially causing retry storms that put further pressure on the system. [Hystrix](https://github.com/Netflix/Hystrix/wiki#problem) is an example solution trying to address the problems of synchronous request/response. It comes [at a cost](https://github.com/Netflix/Hystrix/wiki/FAQ#what-is-the-processing-overhead-of-using-hystrix) though in overhead and complexity.
 
@@ -179,7 +179,7 @@ RSocket seeks to:
    - allocating less memory and reducing garbage collection cost
 
 
-## Comparisons比较
+## 比较
 
 Following is a brief review of some protocols reviewed before deciding to create RSocket. It is not trying to be exhaustive or detailed. It also does not seek to criticize the various protocols, as they all are good at what they are built for. This section is meant solely to express that existing protocols did not sufficiently meet the requirements that motivated the creation of RSocket.
 
