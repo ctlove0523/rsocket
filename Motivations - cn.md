@@ -181,53 +181,35 @@ RSocket致力于解决以下问题：
 
 ## 比较
 
-Following is a brief review of some protocols reviewed before deciding to create RSocket. It is not trying to be exhaustive or detailed. It also does not seek to criticize the various protocols, as they all are good at what they are built for. This section is meant solely to express that existing protocols did not sufficiently meet the requirements that motivated the creation of RSocket.
+下面是在决定创建RSocket协议之前对其他协议的简单回顾。它并不试图详尽无遗。它也不会试图批评各种协议，因为它们都擅长于其构建目的。本部分仅用于表达现有协议不能充分满足促使创建RSocket的要求。
 
-For context: 
-
-- RSocket is an OSI Layer 5/6, or TCP/IP Application Layer protocol. 
-- It is intended for use over duplex, binary transport protocols that are TCP-like in behavior (described further [here](https://github.com/RSocket/reactivesocket/blob/master/Protocol.md#transport-protocol)).
+- 按照OSI分层模型RSocket工作在5/6层，或者TCP/IP协议的应用层。
+- RSocket协议旨在使用类似TCP的双工二进制传输协议作为传输层协议。
 
 #### TCP & QUIC
 
-No framing or application semantics. Must provide an application protocol.
+没有框架或应用层语义，必须提供一个应用层协议。
 
 #### WebSockets
 
-No application semantics, just framing. Must provide an application protocol.
+提供了框架但是没有应用层语义，需要提供一个应用层协议。
 
 #### HTTP/1.1 & HTTP/2
 
-HTTP provides barely sufficient raw capabilities for application protocols to be built with, but an application protocol still needs to be defined on top of it. It is insufficient in defining application semantics. ([GRPC from Google](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md) is an example of a protocol being built on top of HTTP/2 to add these type of semantics).
+HTTP几乎不能为构建应用层协议提供足够的原始功能，但是仍然需要在其上构建应用层协议。HTTP不足以定义应用层语义（Google的GRPC是一个构建于HTTP/2协议之上的例子）。
 
-These limited application semantics generally requires an application protocol to define things such as:
-  - Use of GET, POST or PUT for request
-  - Use of Normal, Chunked or SSE for response
-  - MimeType of payload
-  - error messaging along with standard status codes
-  - how client should behave with status codes
-  - Use of SSE as persistent channel from server to client to allow server to make requests to client
+这些有限的应用程序语义通常需要应用程序协议来定义诸如以下内容：
+  - 请求使用GET，POST或者PUT
+  - 使用Normal，Chunked或SSE进行响应
+  - MimiType负载
+  - 错误信息伴随标准的状态码
+  - 客户端必须处理状态码
+  - 使用SSE作为从服务器到客户端的持久通道，以允许服务器向客户端发出请求
 
-There is no defined mechanism for flow control from responder (typically server) to requestor (typically client). HTTP/2 does flow control at the byte level, not the application level. The mechanisms for communicating requestor (typically server) availability (such as failing a request) are inefficient and painful. It does not support interaction models such as fire-and-forget, and streaming models are inefficient (chunked encoding or SSE, which is ASCII based).
+没有从响应者（通常是服务器）到请求者（客户端）的流控机制。HTTP/2提供了字节级别的流控而不是应用级别流控。用于传递请求者可用性的机制效率低下而且令人痛苦。HTTP/2没有提供诸如fire-and-forget的交互模型，stream模型不够高效。
 
-Despite its ubiquity, REST alone is insufficient and inappropriate for defining application semantics. 
+REST无处不在，但是仅有REST足以定义应用层语义。
 
-What about HTTP/2 though? Doesn't it resolve the HTTP/1 issues and address the motivations of RSocket?
+HTTP/2怎么样呢？有木有解决HTTP/1的问题并消磨创建RSocket的动机？
 
-Unfortunately, no. HTTP/2 is MUCH better for browsers and request/response document transfer, but does not expose the desired behaviors and interaction models for applications as described earlier in this document.
-
-Here are some quotes from the HTTP/2 [spec](https://http2.github.io/http2-spec/) and [FAQ](https://http2.github.io/faq/) that are useful to provide context on what HTTP/2 was targeting:
-
-> “HTTP's existing semantics remain unchanged.”
-
-> “… from the application perspective, the features of the protocol are largely unchanged …”
-
-> "This effort was chartered to work on a revision of the wire protocol – i.e., how HTTP headers, methods, etc. are put “onto the wire”, not change HTTP’s semantics."
-
-Additionally, "push promises" are focused on filling browser caches for standard web browsing behavior:
-
-> “Pushed responses are always associated with an explicit request from the client.”
-
-This means we still need SSE or WebSockets (and SSE is a text protocol so requires Base64 encoding to UTF-8) for push.
-
-HTTP/2 was meant as a better HTTP/1.1, primarily for document retrieval in browsers for websites. We can do better than HTTP/2 for applications. 
+很不幸的是不行。HTTP/2对于浏览器和请求/响应模式的文档传输而然更好，但是HTTP/2没有提供前文描述的应用需要的行为和交互模型。对于文档交互HTTP/2比HTTP/1做的更加优秀，但是对于应用而言我们可以而且理应做的比HTTP/2更加优秀。
