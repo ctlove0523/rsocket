@@ -159,22 +159,24 @@ Many of the motivations above can be achieved by leveraging existing protocols, 
 
 #### 效率和性能
 
-A protocol that uses network resources inefficiently (repeated handshakes and connection setup and tear down overhead, bloated message format, etc.) can greatly increase the perceived latency of a system. Also, without flow control semantics, a single poorly written module can overrun the rest of the system when dependent services slow down, potentially causing retry storms that put further pressure on the system. [Hystrix](https://github.com/Netflix/Hystrix/wiki#problem) is an example solution trying to address the problems of synchronous request/response. It comes [at a cost](https://github.com/Netflix/Hystrix/wiki/FAQ#what-is-the-processing-overhead-of-using-hystrix) though in overhead and complexity.
+网络资源使用率低（重复握手、建链、拆链，膨胀的消息格式等）的协议会大大增加系统的延迟。同样，如果没有流控语义，当相关服务速度变慢时，单个编写不当的模块可能会使系统的其余部分超负荷运行，从而可能导致重试风暴，从而给系统带来进一步的压力。Hystrix是一个尝试解决同步请求/响应的解决方案，但是需要付出一定的代驾：额外的开销和复杂性。
 
-Additionally, a poorly chosen communication protocol wastes server resources (CPU, memory, network bandwidth). While that may be acceptable for smaller deployments, large systems with hundreds or thousands of nodes multiply the somewhat small inefficiencies into noticeable excess. Running with a huge footprint leaves less room for expansion as server resources are relatively cheap but not infinite. Managing giant clusters is much more expensive and less nimble even with good tools. And often forgotten, the larger a cluster is, the more operationally complex it is, which becomes an availability concern. 
+此外，选择不当的通信协议会浪费服务器资源（CPU、内存、网络带宽）。尽快资源的浪费可以在较小的部署场景被接受，但是对于成百上千节点的大型系统微小的低效率会被放大的十分明显。尽快服务器资源相对便宜，但是也并不是无限的，但是运行服务器的空间难以扩展（地大才是王道）。即使使用好的工具，管理大型集群的成本也要高得多，灵活性也要低得多。常常被遗忘的是，集群越大，它的操作越复杂，这成为可用性问题。
 
-RSocket seeks to:
+RSocket致力于解决以下问题：
 
-- Reduce perceived latency and increase system efficiency by supporting non-blocking, duplex, async application communication with flow control over multiple transports from any language.
-
+- 降低时延，提供系统效率。RSocket支持非阻塞、双工、应用层异步通信，流控。
 - Reduce hardware footprint (and thus cost and operational complexity) by:
-   - increasing CPU and memory efficiency through use of binary encoding
-   - avoid redundant work by allowing persistent connections
-
+  - increasing CPU and memory efficiency through use of binary encoding
+  - avoid redundant work by allowing persistent connections
+- 减少硬件占用空间（降低成本和操作复杂性）：
+  * 通过二进制编码提供CPU和内存的使用率。
+  * 通过持久连接减少重复工作
 - Reduce perceived user latency by:
-   - avoiding handshakes and the associated round-trip network overhead
-   - reducing computation time by using binary encoding
-   - allocating less memory and reducing garbage collection cost
+- 减少用户感知时延：
+  - 避免握手和相关的往返网络开销
+  - 通过使用二进制编码减少计算时间
+  - 分配更少的内存并降低垃圾回收成本
 
 
 ## 比较
