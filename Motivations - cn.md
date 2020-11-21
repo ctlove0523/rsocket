@@ -130,21 +130,17 @@ RSocket支持会话恢复，允许简单的握手即可通过新的传输连接�
 
 #### 应用流控
 
-RSocket supports two forms of application-level flow control to help protect both client and server resources from being overwhelmed.
+RSocket支持两种应用级流控以保护客户端和服务器资源不会被耗尽。RSocket协议旨在用于数据中心、服务器到服务器以及服务器通过互联网到设备的场景。
 
-This protocol is designed for use both in datacenter, server-to-server, use cases, as well as server-to-device use cases over the internet, such as to mobile devices or browsers. 
+##### 响应式流的request(n)异步拉取
 
-##### "Reactive Streams" `request(n)` Async Pull
+应用流控的这种形式适用于服务器到服务器和服务器到设备的场景。这种流控方式受响应式流Subscription.request(n)的启发。RxJava、Reactor和Akka 实现了“异步拉取”形式的流控。
 
-This first form of flow control is suited to both server-to-server and server-to-device use cases. It is inspired by the Reactive Streams [Subscription.request(n)](https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md#3-subscription-code) behavior. [RxJava](https://github.com/ReactiveX/RxJava/), [Reactor](https://github.com/reactor/reactor), and [Akka Streams](http://doc.akka.io/docs/akka/2.4/scala/stream/index.html) are examples of implementations using this form of "async pull-push" flow control.
-
-RSocket allows for the `request(n)` signal to be composed over network boundaries from requester to responder (typically client to server). This controls the flow of emission from responder to requestor using Reactive Streams semantics at the application level and enables use of bounded buffers so rate of flow adjusts to application consumption and not rely solely on transport and network buffering.
-
-This same data type and approach has been adopted into Java 9 in the `java.util.concurrent.Flow` [suite of types](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.Subscription.html).
+RSocket允许在请求者到响应者（通常是客户端到服务器）的网络边界上组成`request(n)` 信号。这可以在应用级使用响应式流的语义控制从响应者到请求者的流并允许使用有限缓冲区，因此可以根据应用程序的消费情况进行调整而不是仅仅依靠传输和网络缓冲区。
 
 ##### Leasing
 
-The second form of flow control is primarily focused on server-to-server use cases in a data center. When enabled, a responder (typically a server) can issue leases to the requester based upon its knowledge of its capacity in order to control requests rates. On the requester side, this enables application level load balancing for sending messages only to responders (servers) that have signalled capacity. This signal from server to client allows for more intelligent routing and load balancing algorithms in data centers with clusters of machines. 
+流控的第二种形式主要关注数据中心中的服务器到服务器场景。启用该种形式的流控后，响应者（通常是服务器）可以基于其对请求者容量的了解，向请求者发出租约，以控制请求速率。在请求方，这可以实现应用程序级负载平衡，以便仅将消息发送给已发出信号容量的响应者（服务器）。从服务器到客户端的信号允许在具有机器集群的数据中心中使用更智能的路由和负载平衡算法。
 
 
 #### 多语言支持
