@@ -151,11 +151,11 @@ Many of the motivations above can be achieved by leveraging existing protocols, 
 
 #### 灵活的传输层
 
-Just like HTTP request/response is not the only way applications can or should communicate, TCP is not the only transport layer available, and not the best for all use cases. Thus, RSocket allows for swapping of the underlying transport layer based on environment, device capabilities and performance needs. RSocket (the application protocol) targets WebSockets, TCP, and [Aeron](https://github.com/real-logic/Aeron), and is expected to be usable over any transport layer with TCP-like characteristics, such as [Quic](https://www.chromium.org/quic).
+像HTTP 请求/响应不是应用程序之间通信的唯一可以或必须使用的方式，TCP不是唯一可用的传输层，也不是所有使用场景下的最优选择。因此RSocket允许根据运行环境、设备能力以及性能需求切换传输层协议。RSocket目前支持的传输层协议包括WebSocket、TCP和Aeron，并且有望支持所有具有TCP特性的所有传输层协议比如Quic。
 
-Perhaps more importantly though, it makes TCP, WebSockets and Aeron usable without significant effort. For example, use of WebSockets is often appealing, but all it exposes is framing semantics, so using it requires the definition of an application protocol. This is generally overwhelming and requires a lot of effort. TCP doesn't even provide framing. Thus, most applications end up using HTTP/1.1 and sticking to request/response and missing out on the benefits of interaction models beyond synchronous request/response.
+也许更重要的是RSocket无需花费巨大的精力就可以使用WebSocket、TCP和Aeron。例如，使用WebSocket通常十分很吸引人，但是WebSocket只暴露了框架语义，因此使用WebSocket需要定义应用层协议。定义应用层协议通常很复杂而且需要大量的精力投入。TCP甚至连框架都没有提供。因此，大多数应用程序最终使用HTTP / 1.1并坚持使用请求/响应模式，为此错过了交互模型比同步请求/响应带来的好处。
 
-Thus, RSocket defines application layer semantics over these network transports to allow choosing them when they are appropriate. Later in this document is a brief comparison with other protocols that were explored while trying to leverage WebSockets and Aeron before determining that a new application protocol was wanted.
+因此，RSocket基于网络传输定义了应用程序层语义，以允许在传输层协议可用时选择使用。本文档的后面部分是与其他协议的简要比较，这些协议在试图确定是否需要新的应用程序协议之前尝试利用WebSockets和Aeron。
 
 #### 效率和性能
 
