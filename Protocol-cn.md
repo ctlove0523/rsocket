@@ -136,9 +136,9 @@ RSocket支持的某些传输协议可能不支持保留消息边界的特定帧�
 
 __NOTE__: 字节序为大端
 
-### Frame Header Format
+### Frame Header Format 帧的头格式
 
-RSocket frames begin with a RSocket Frame Header. The general layout is given below.
+RSocket帧以RSocket帧头开始，下面是一般的布局：
 
 ```
      0                   1                   2                   3
@@ -150,33 +150,30 @@ RSocket frames begin with a RSocket Frame Header. The general layout is given be
     +-------------------------------+
 ```
 
-* __Stream ID__: (31 bits = max value 2^31-1 = 2,147,483,647) Unsigned 31-bit integer representing the stream Identifier for this frame or 0 to indicate the entire connection.
-  * Transport protocols that include demultiplexing, such as HTTP/2, MAY omit the Stream ID field if all parties agree. The means of negotiation and agreement is left to the transport protocol. 
-* __Frame Type__: (6 bits = max value 63) Type of Frame.
-* __Flags__: (10 bits) Any Flag bit not specifically indicated in the frame type should be set to 0 when sent and not interpreted on
-reception. Flags generally depend on Frame Type, but all frame types MUST provide space for the following flags:
-     * (__I__)gnore: Ignore frame if not understood
+* __Stream ID__: (31 bits = max value 2^31-1 = 2,147,483,647) 31位无符号整数型表示帧的流ID，如果该值为0则表示整个连接。
+  * 像HTTP/2这样多路复用的传输协议，如果各方同意可以省略该字段。传输协议负责判断和达成一致。
+* __Frame Type__: (6 bits = max value 63) 帧类型
+* __Flags__: (10 bits) 发送时未在帧类型中明确指示的任何标志位应设置为0，并且在接收时不进行解释。 标志位通常和帧类型相关，但是所有的帧类型必须位以下标记预留空间：
+   * (__I__)gnore: Ignore frame if not understood
      * (__M__)etadata: Metadata present
 
 __NOTE__: Byte ordering is big endian.
 
-#### Handling Ignore Flag
+#### Handling Ignore Flag处理忽略标记
 
-The (__I__)gnore flag is used for extension of the protocol. A value of 0 in a frame for this flag indicates the protocol can't
-ignore this frame. An implementation MAY send an ERROR[CONNECTION_ERROR] frame and close the underlying transport
-connection on reception of a frame that it does not understand with this bit not set.
+忽略标记（I）用于扩展协议。如果帧中的该位的值为0则协议不可以忽略该帧。RSocket的协议实现可以在接收到一个无法理解的帧而且该帧的忽略标记位没有被设置时发送一个ERROR并关闭底层的传输连接。
 
-#### Frame Validation
+#### 帧校验
 
-RSocket implementations may provide their own validation at the metadata level for specific frames. However, this is an application concern and not necessary for protocol processing.
+RSocket协议的实现可以在元数据级别针对特定的帧提供自己实现的校验。但是这是应用行为不是协议处理所必须的。
 
-#### Metadata Optional Header
+#### 元数据可以选头
 
-Specific Frame Types MAY contain Metadata. If that Frame Type supports both Data and Metadata, the optional Metadata header MUST be included. This metadata header is between the Frame Header and any payload.
+特定类型的帧可能包含元数据。如果帧同时支持数据和元数据，则必须包含可选的元数据头。元数据头必须位于帧头和有效载荷之间。
 
-Metadata Length MUST be equal to the Frame Length minus the sum of the length of the Frame Header and the length of the Frame Payload, if present. If Metadata Length is not equal to this value, the frame is invalid and the receiver MUST send an ERROR[CONNECTION_ERROR] frame and close the underlying transport connection on reception unless the frame's IGNORE flag is set.
+元数据的长度=帧的长度-帧头的长度-有效载荷的长度。如果元数据的长度和该值不相等，则该帧是一个不合法的帧，接收者在接收到该帧时，如果忽略标记位没有设置，接收者必须发送一个错误帧并关闭底层的传输连接。
 
-On a frame with Data and Metadata:
+一个包含数据和元数据的帧：
 
 ```
      0                   1                   2                   3
@@ -190,7 +187,7 @@ On a frame with Data and Metadata:
     +---------------------------------------------------------------+
 ```
 
-On a frame that supports Data and Metadata, but Data length is 0:
+一个包含数据和元数据但是数据长度为0的帧：
 
 ```
      0                   1                   2                   3
@@ -202,7 +199,7 @@ On a frame that supports Data and Metadata, but Data length is 0:
     +---------------------------------------------------------------+
 ```
 
-On a frame that only has Metadata, the Metadata length field is NOT needed:
+只包含元数据的帧，元数据字段可以不需要：
 
 ```
      0                   1                   2                   3
@@ -213,9 +210,8 @@ On a frame that only has Metadata, the Metadata length field is NOT needed:
 ```
 
 
-* __Metadata Length__: (24 bits = max value 2^24-1 = 16,777,215) Unsigned 24-bit integer representing the length of Metadata in bytes. Excluding Metadata Length field.
+* __Metadata Length__: (24 bits = max value 2^24-1 = 16,777,215) 24位无符号整型，该值不包括元数据长度字段本身。
 
-<a name="stream-identifiers"></a>
 ### Stream Identifiers
 
 #### Generation
