@@ -273,20 +273,13 @@ It is RECOMMENDED that Stream ID re-use only be used in combination with resumab
 <a name="frame-setup"></a>
 ### SETUP Frame (0x01)
 
-Setup frames MUST always use Stream ID 0 as they pertain to the connection.
+Setup帧使用的流ID必须为0，因为Setup是和整个连接相关。客户端发送SETUP帧，以通知服务器其所期望操作的参数。连接建立展示了Setup帧的使用及消息序列。
 
-The SETUP frame is sent by the client to inform the server of the parameters under which it desires
-to operate. The usage and message sequence used is shown in [Connection Establishment](#connection-establishment).
+对于连接来说重要的参数包括格式、布局以及任何与帧的数据和元数据有关的模式。由于缺乏更好的用语，此处称为“ MIME类型”。一个RSocket实现可以使用典型的MIME类型值或可以决定使用特定的非MIME类型值来表示格式，布局以及和数据、元数据相关的模式。协议实现绝对不能结实MIME 类型，这是应用程序需要操心的事情。
 
-One of the important parameters for a connection is the format, layout, and any schema of the data and metadata for
-frames. This is, for lack of a better term, referred to here as "MIME Type". An implementation MAY use typical MIME type
-values or MAY decide to use specific non-MIME type values to indicate format, layout, and any schema
-for data and metadata. The protocol implementation MUST NOT interpret the MIME type itself. This is an application
-concern only.
+数据和元数据的编码格式在Setup中分别设置。
 
-The encoding format for Data and Metadata are included separately in the SETUP.
-
-Frame Contents
+Setup帧的内容：
 
 ```
      0                   1                   2                   3
@@ -338,7 +331,8 @@ Setup header.
 
 __NOTE__: A server that receives a SETUP frame that has (__R__)esume Enabled set, but does not support resuming operation, MUST reject the SETUP with an ERROR[REJECTED_SETUP]. 
 
-<a name="frame-error"></a>
+**注意** ：如果服务器收到一个设置了Resume（复用）的SETUP帧，但是服务器不支持复用，服务器必须发送ERROR[REJECT_SETUP]来拒绝客户端的SETUP。
+
 ### ERROR Frame (0x0B)
 
 Error frames are used for errors on individual requests/streams as well as connection errors and in response to SETUP frames. 
