@@ -306,18 +306,18 @@ Setup帧的内容：
 
 * __Frame Type__: (6 bits) 0x01
 * __Flags__: (10 bits)
-     * (__M__)etadata: Metadata present
-     * (__R__)esume Enable: Client requests resume capability if possible. Resume Identification Token present.
-     * (__L__)ease: Will honor LEASE (or not).
-* __Major Version__: (16 bits = max value 65,535) Unsigned 16-bit integer of Major version number of the protocol.
-* __Minor Version__: (16 bits = max value 65,535) Unsigned 16-bit integer of Minor version number of the protocol.
-* __Time Between KEEPALIVE Frames__: (31 bits = max value 2^31-1 = 2,147,483,647) Unsigned 31-bit integer of Time (in milliseconds) between KEEPALIVE frames that the client will send. Value MUST be > 0. 
-   * For server-to-server connections, a reasonable time interval between client KEEPALIVE frames is 500ms.
-   * For mobile-to-server connections, the time interval between client KEEPALIVE frames is often > 30,000ms.
-* __Max Lifetime__: (31 bits = max value 2^31-1 = 2,147,483,647) Unsigned 31-bit integer of Time (in milliseconds) that a client will allow a server to not respond to a KEEPALIVE before it is assumed to be dead. Value MUST be > 0. 
-* __Resume Identification Token Length__: (16 bits = max value 65,535) Unsigned 16-bit integer of Resume Identification Token Length in bytes. (Not present if R flag is not set)
-* __Resume Identification Token__: Token used for client resume identification (Not present if R flag is not set)
-* __MIME Length__: Encoding MIME Type Length in bytes.
+     * (__M__)etadata: 存在元数据
+     * (__R__)esume Enable: 如果可能客户端请求使用恢复能力。表示恢复的令牌会存在。
+     * (__L__)ease: 兑现或不兑现租赁契约
+* __Major Version__: (16 bits = max value 65,535) 无符号16位整型表示的协议主版本
+* __Minor Version__: (16 bits = max value 65,535) 无符号16位整型表示的协议次版本.
+* __Time Between KEEPALIVE Frames__: (31 bits = max value 2^31-1 = 2,147,483,647)  31位无符号整型表示客户短两次发送KEEPALIVE帧的间隔（毫秒），值必须大于0.
+   * 对于服务器-服务器之间的连接，一个合理的值大概是500毫秒。
+   * 对于移动设备-服务器之间的连接，一个合理的值大概是30000毫秒。
+* __Max Lifetime__: (31 bits = max value 2^31-1 = 2,147,483,647) 客户端允许服务端不响应KEEPALIVE的时间间隔（毫秒），如果超过该值客户端则判定服务端已经不可用，该值必须大于0。
+* __Resume Identification Token Length__: (16 bits = max value 65,535) 重用标识符的长度（字节），如果没有设置R位则该字段不包含在帧内。
+* __Resume Identification Token__: 重用标识，如果R位没有被设置，则该字段不包含在帧内。
+* __MIME Length__: 编码位MIME类型后的长度（字节）
 * __Encoding MIME Type__: MIME Type for encoding of Data and Metadata. This SHOULD be a US-ASCII string
 that includes the [Internet media type](https://en.wikipedia.org/wiki/Internet_media_type) specified
 in [RFC 2045](https://tools.ietf.org/html/rfc2045). Many are registered with
@@ -328,8 +328,6 @@ rules MAY be used for handling layout. For example, `application/x.netflix+cbor`
 `application/x.reactivesocket+cbor` or `application/x.netflix+json`. The string MUST NOT be null terminated.
 * __Setup Data__: includes payload describing connection capabilities of the endpoint sending the
 Setup header.
-
-__NOTE__: A server that receives a SETUP frame that has (__R__)esume Enabled set, but does not support resuming operation, MUST reject the SETUP with an ERROR[REJECTED_SETUP]. 
 
 **注意** ：如果服务器收到一个设置了Resume（复用）的SETUP帧，但是服务器不支持复用，服务器必须发送ERROR[REJECT_SETUP]来拒绝客户端的SETUP。
 
